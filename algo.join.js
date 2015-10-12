@@ -100,7 +100,10 @@ function analyze(s) {
       if (bestScore) {
         isbad = true;
         var matched = dset[bestMatchI];
-        var code = (matched[1] + ":" + matched[2] + ":" ).toLowerCase();
+        var code1 = normalizeName(matched[1] + ":" + matched[2]  );
+        var code2 = normalizeName(matched[0][0] + ":" + matched[2] );
+        var code = code1;
+        if (!bad[code1] && bad[code2]) code = code2;
         if (!bad[code]) bad[code] = [];
         bad[code].push([dseti, matched]);
       }

@@ -24,7 +24,7 @@ Array.prototype.contains = function(searchFor) {
 }
 
 function normalizeName(name){
-  return name.toLowerCase().replace(/[\s*]/,"","g");
+  return name.toLowerCase().replace(/[\s*]/g,"");
 }
 function splitParens(name)  {
   while (name.contains("(")) {
