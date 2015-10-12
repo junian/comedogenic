@@ -113,6 +113,7 @@ var STR_SIM_THRESHOLD = 0.5;
 
 function element(id){ return document.getElementById("comedogenic-" + id);  }
 
+function sourceLink(i) { return '<a href="'+dataSourceUrl[i]+'">'+dataSourceSymbol[i]+'</a>' }
 
 function analyze(s) {
   var a = null;
@@ -123,7 +124,8 @@ function analyze(s) {
       break; 
     }
   if (!s) { alert("No ingredient separator found."); s = [s]; }
-  var badTable = "";
+  var hasAnyBad = false;
+  var badRows = ["","","","","",""];
   for (var i=0;i<s.length;i++) {
     var names = splitParens(normalizeName(s[i]).replace(" ","","g")).split("/");
     var bad = {}; var isbad = false;
@@ -153,22 +155,37 @@ function analyze(s) {
       }
     }
     if (isbad) {
-      if (!badTable) 
-        badTable = "<thead><tr><th>Ingredient</th><th>Possible Match</th><th>Comedogenic rating</th><th>Irritation rating</th></tr></thead>";
+      hasAnyBad = true;
+      var ratingScore = {};
+      var maxRatingScore = 0;
+      for (prop in bad) {
+        var matched = bad[prop][0][1];
+        var maxed = matched[2];
+        if (maxed.contains("-")) maxed = maxed.split("-")[maxed.split("-").length-1];
+        maxed = maxed * 1;
+        if (!(maxed  >= 0 && maxed < badRows.length)) maxed = badRows.length-1;
+        ratingScore[prop] = maxed; 
+        if (maxed > maxRatingScore) maxRatingScore = maxed;
+      }
+ 
       var first = true;
       for (prop in bad) {
         var matched = bad[prop][0][1];
-        var sources = [];
-        for (var j=0;j<bad[prop].length;j++) sources.push('<a href="'+dataSourceUrl[bad[prop][j][0]]+'">'+dataSourceSymbol[bad[prop][j][0]]+'</a>');
-        maxed = matched[2];
-        if (maxed.contains("-")) maxed = maxed.split("-")[maxed.split("-").length-1];
-        badTable += '<tr class="comedogenic-rating'+maxed+'"><td>' + (first ? s[i] : "") + " </td> <td> => " + matched[1] + " ("+sources.join(", ")+')</td><td style="text-align:center">'+matched[2]+'</td><td style="text-align:center">'+(matched[3] && matched[3] != "?" ? matched[3] : "")+"</td>";
+        var sources = []; 
+        for (var j=0;j<bad[prop].length;j++) sources.push(sourceLink(bad[prop][j][0]));
+        badRows[maxRatingScore] += '<tr class="comedogenic-rating'+ratingScore[prop]+'"><td class="comedogenic-rating'+maxRatingScore+'">' + (first ? s[i] : "") + " </td> <td> => " + matched[1] + " ("+sources.join(", ")+')</td><td style="text-align:center">'+matched[2]+'</td><td style="text-align:center">'+(matched[3] && matched[3] != "?" ? matched[3] : "")+"</td>" ;
         first = false;
       }
       
     }
   }
-  if (!badTable) badTable = '<tr class="comedogenic-score0"><td> => No comedogenic ingredients found</td></tr>';
+  var badTable;
+  if (hasAnyBad) {
+    badTable = "<thead><tr><th>Ingredient</th><th>Possible Match</th><th>Comedogenic rating</th><th>Irritation rating</th></tr></thead>";
+    for (var i=badRows.length-1;i>=0;i--) badTable += badRows[i];
+  } else {
+    badTable = '<tr class="comedogenic-score0"><td> => No comedogenic ingredients found</td></tr>';
+  }
   element("out").innerHTML = badTable;
 }
 
@@ -179,7 +196,7 @@ function analyze(s) {
 }*/
 
 var style=document.createElement("style");
-style.textContent = ".comedogenic-rating0 { background-color: #11FF11 }" + 
+style.textContent = ".comedogenic-rating0 { background-color: #99FF99 }" + 
   ".comedogenic-rating1 { background-color: #BBFF33 }" +
   ".comedogenic-rating2 { background-color: #FFFF33 }" +
   ".comedogenic-rating3 { background-color: #FFCC22 }" +
