@@ -77,10 +77,13 @@ function analyze(s) {
   if (!s) { alert("No ingredient separator found."); s = [s]; }
   var hasAnyBad = false;
   var badRows = ["","","","","",""];
+  var enabledSources = [];
+  for (var i=0;i<dataSourceSymbol.length;i++) enabledSources.push(element("source"+i).checked);
   for (var i=0;i<s.length;i++) {
     var names = splitParens(normalizeName(s[i]).replace(" ","","g")).split("/");
     var bad = {}; var isbad = false;
-    for (var dseti=0;dseti<data.length;dseti++) {
+    for (var dseti=0;dseti<data.length;dseti++) { 
+      if (!enabledSources[dseti]) continue;
       var bestMatchI = -1;
       var bestScore = 0;
       var dset = data[dseti];
@@ -150,7 +153,7 @@ function analyze(s) {
     badTable = "<thead><tr><th>Ingredient</th><th>Possible Match</th><th>Comedogenic rating</th><th>Irritation rating</th></tr></thead>";
     for (var i=badRows.length-1;i>=0;i--) badTable += badRows[i];
   } else {
-    badTable = '<tr class="comedogenic-score0"><td> => No comedogenic ingredients found</td></tr>';
+    badTable = '<tr class="comedogenic-rating0"><td> => No comedogenic ingredients found</td></tr>';
   }
   element("out").innerHTML = badTable;
 }
@@ -172,9 +175,13 @@ style.textContent = ".comedogenic-rating0 { background-color: #99FF99 }" +
   ;
 document.getElementsByTagName("head")[0].appendChild(style);
 
+var sourceshtml="";
+for (var i=0;i<dataSourceSymbol.length;i++)
+  sourceshtml += '<input id="comedogenic-source'+i+'" type="checkbox" checked> '+sourceLink(i);
+
 element("placeholder").innerHTML = '<h3>Comedogenic Ingredient Tester</h3>' +
   'Ingredient list: <input type="edit" id="comedogenic-in" style="display:block; width: 100%"/>' + 
-  '<button onclick="javascript:analyze(element(\'in\').value)">Check ingredients</button> <span style="padding-left:3em">Matching threshold:</span> <input type="edit" id="comedogenic-score" value="'+STR_SIM_THRESHOLD+'" size="5" style="text-align: right"/> %'+ 
+  '<button onclick="javascript:analyze(element(\'in\').value)">Check ingredients</button> <span style="padding-left:2em">Matching threshold:</span> <input type="edit" id="comedogenic-score" value="'+STR_SIM_THRESHOLD+'" size="5" style="text-align: right"/> % <span style="padding-left:2em">Databases:</span>'+sourceshtml+ 
   '<h4>Test result</h4>' +
   '<table id="comedogenic-out" style="display:block; width: 100%"></table>' + "<br><br><br>" +
   '<h3>Questions</h3>'+
