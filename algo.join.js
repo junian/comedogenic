@@ -65,6 +65,7 @@ function element(id){ return document.getElementById("comedogenic-" + id);  }
 function sourceLink(i) { return '<a href="'+dataSourceUrl[i]+'">'+dataSourceSymbol[i]+'</a>' }
 
 function analyze(s) {
+  STR_SIM_THRESHOLD = element("score").value * 1;
   var a = null;
   var splitChars = "|,:;";
   for (var i=0;i<splitChars.length;i++)
