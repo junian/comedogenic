@@ -1,4 +1,7 @@
 var data = [dataAcneOrg, dataBotanic, dataHautschutzengel];
+var dataSourceUrl =  ["http://www.acne.org/messageboard/topic/319593-the-bad-list-comedogenic-ingredients-and-products/", "https://www.beneficialbotanicals.com/facts-figures/comedogenic-rating.html", "http://www.hautschutzengel.de/komedogene-inhaltsstoffe.html"];
+var dataSourceSymbol =  ["AC", "BB", "HE"];
+
 
 String.prototype.contains = function(searchFor) {
   return this.indexOf(searchFor) >= 0;
@@ -21,7 +24,7 @@ Array.prototype.contains = function(searchFor) {
 }
 
 function normalizeName(name){
-  return name.toLowerCase().replace(/[ *]/,"","g");
+  return name.toLowerCase().replace(/[\s*]/,"","g");
 }
 function splitParens(name)  {
   while (name.contains("(")) {
@@ -36,10 +39,10 @@ for (var d=0;d<data.length;d++) {
   var subdata = data[d];
   for (var i=0;i<subdata.length;i++) {
     var name = splitParens(normalizeName(subdata[i][0]));    
-    subdata[i] = [name.split("/")].concat(subdata[i]); 
+    subdata[i] = [name.split("/")].concat( [subdata[i][0], normalizeName(subdata[i][1]), subdata[i][2] ? normalizeName(subdata[i][2]) : null] ); 
   }
 }
 
-
+//data is now [  /*data source 1:*/ [ /* ingred 1: */ [ [subname 1, subname 2, ..], name, comedogenic, irritating  ] , [ [ ingred 2 subname 1 ], name, co, irr ], ... ], [ /*data source 2*/], ...     ]
 
 

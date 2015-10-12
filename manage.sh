@@ -18,7 +18,7 @@ gatherdata)
   xidel http://www.hautschutzengel.de/komedogene-inhaltsstoffe.html -e '"var dataHautschutzengel = [" || join(id("komedogene_inhaltsstoffe")/tbody[2]/tr[position() ne last()]/x" [""{td[1]} / {td[2]}"", ""{td[3]}""] ",", ")|| "]; " ' > dataHautschutzEngel.dump.js
 
 
-   cat dataAcneOrg.dump.js dataBotanic.dump.js dataHautschutzEngel.dump.js data.join.js algo.join.js > comedogenic.js
+  cat dataAcneOrg.dump.js dataBotanic.dump.js dataHautschutzEngel.dump.js data.join.js algo.join.js > comedogenic.js
 
 ;;
 esac
