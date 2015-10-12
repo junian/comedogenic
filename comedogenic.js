@@ -207,10 +207,16 @@ style.textContent = ".comedogenic-rating0 { background-color: #99FF99 }" +
   ;
 document.getElementsByTagName("head")[0].appendChild(style);
 
-element("placeholder").innerHTML = (
+element("placeholder").innerHTML = '<h3>Comedogenic Ingredient Tester</h3>' +
   'Ingredient list: <input type="edit" id="comedogenic-in" style="display:block; width: 100%"/>' + 
   '<button onclick="javascript:analyze(element(\'in\').value)">Check ingredients</button> <span style="padding-left:3em">Matching threshold:</span> <input type="edit" id="comedogenic-score" value="'+STR_SIM_THRESHOLD+'" size="5" style="text-align: right"/> %'+ 
-  '<table id="comedogenic-out" style="display:block; width: 100%"></table>' )
+  '<h4>Test result</h4>' +
+  '<table id="comedogenic-out" style="display:block; width: 100%"></table>' + "<br><br><br>" +
+  '<h3>Questions</h3>'+
+  '<h4>How do I use this?</h4><p>Copy a list of ingredients in the top edit field and click the "check" button. Ingredients with low comedogenic rating (0) are safe, ingredients with high rating (5) are dangerous.</p>' +
+  '<h4>Why does it output nonsensical matches?</h4><p>It uses a very simple text similarity score to find the match. If you have ingredients in the list that are not in the source database, it will find a random ingredient with similar name. Increase the threshold value to discard less similar matches.</p>' + 
+  '<h4>Why is there one row saying the ingredient is safe and one row saying that it is unsafe?</h4><p>This tool only lists the ratings from the source databases. If those databases do not agree with each other, it reports it accordingly.</p>' 
+
   ;
 
 var args = /[?&]comedogenic-check=([^&]+)/.exec(location.toString());
