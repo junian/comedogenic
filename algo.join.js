@@ -58,7 +58,7 @@ function strSim(s,t) {
   return 1 - levenshtein(s,t) / Math.max(s.length,t.length);
 }
 
-var STR_SIM_THRESHOLD = 0.5;
+var STR_SIM_THRESHOLD = 0.75;
 
 function element(id){ return document.getElementById("comedogenic-" + id);  }
 
