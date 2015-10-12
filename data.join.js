@@ -39,7 +39,7 @@ for (var d=0;d<data.length;d++) {
   var subdata = data[d];
   for (var i=0;i<subdata.length;i++) {
     var name = splitParens(normalizeName(subdata[i][0]));    
-    subdata[i] = [name.split("/")].concat( [subdata[i][0], normalizeName(subdata[i][1]), subdata[i][2] ? normalizeName(subdata[i][2]) : null] ); 
+    subdata[i] = [name.split("/")].concat( [subdata[i][0], normalizeName(subdata[i][1]), subdata[i][2] && subdata[i][2] != "?" ? normalizeName(subdata[i][2]) : ""] ); 
   }
 }
 

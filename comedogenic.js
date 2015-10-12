@@ -42,7 +42,7 @@ for (var d=0;d<data.length;d++) {
   var subdata = data[d];
   for (var i=0;i<subdata.length;i++) {
     var name = splitParens(normalizeName(subdata[i][0]));    
-    subdata[i] = [name.split("/")].concat( [subdata[i][0], normalizeName(subdata[i][1]), subdata[i][2] ? normalizeName(subdata[i][2]) : null] ); 
+    subdata[i] = [name.split("/")].concat( [subdata[i][0], normalizeName(subdata[i][1]), subdata[i][2] && subdata[i][2] != "?" ? normalizeName(subdata[i][2]) : ""] ); 
   }
 }
 
@@ -114,6 +114,7 @@ var STR_SIM_THRESHOLD = 0.5;
 function element(id){ return document.getElementById("comedogenic-" + id);  }
 
 function sourceLink(i) { return '<a href="'+dataSourceUrl[i]+'">'+dataSourceSymbol[i]+'</a>' }
+function sourceLinks(sources) { return "(" + sources.map(sourceLink).join(", ") + ")"; }
 
 function analyze(s) {
   STR_SIM_THRESHOLD = element("score").value * 1;
@@ -150,7 +151,7 @@ function analyze(s) {
       if (bestScore) {
         isbad = true;
         var matched = dset[bestMatchI];
-        var code = (matched[1] + ":" + matched[2] + ":" + (matched[3] && matched[3] != "?" ? matched[3] : "")).toLowerCase();
+        var code = (matched[1] + ":" + matched[2] + ":" ).toLowerCase();
         if (!bad[code]) bad[code] = [];
         bad[code].push([dseti, matched]);
       }
@@ -169,12 +170,24 @@ function analyze(s) {
         if (maxed > maxRatingScore) maxRatingScore = maxed;
       }
  
+      function foldWithSourcesOnColumn(list,column) {
+        var sources = {}; var names = {};
+        for (var i=0;i<list.length;i++) { 
+          var v = list[i][1][column];
+          if (typeof v == "undefined") continue;
+          var w = v.toString().toLowerCase();
+          if (!sources[w]) sources[w] = [];
+          sources[w].push(list[i][0]);
+          names[w] = v;
+        }
+        var result = [];
+        for (var prop in sources) if (names[prop]) result.push(names[prop] + " " + sourceLinks(sources[prop]));
+        return result.join(", ");
+      }
       var first = true;
-      for (prop in bad) {
+      for (prop in bad) { 
         var matched = bad[prop][0][1];
-        var sources = []; 
-        for (var j=0;j<bad[prop].length;j++) sources.push(sourceLink(bad[prop][j][0]));
-        badRows[maxRatingScore] += '<tr class="comedogenic-rating'+ratingScore[prop]+'"><td class="comedogenic-rating'+maxRatingScore+'">' + (first ? s[i] : "") + " </td> <td> => " + matched[1] + " ("+sources.join(", ")+')</td><td style="text-align:center">'+matched[2]+'</td><td style="text-align:center">'+(matched[3] && matched[3] != "?" ? matched[3] : "")+"</td>" ;
+        badRows[maxRatingScore] += '<tr class="comedogenic-rating'+ratingScore[prop]+'"><td class="comedogenic-rating'+maxRatingScore+'">' + (first ? s[i] : "") + " </td> <td> => " + foldWithSourcesOnColumn(bad[prop],1)+'</td><td style="text-align:center">'+matched[2]+'</td><td style="text-align:center">'+foldWithSourcesOnColumn(bad[prop],3)+"</td>" ;
         first = false;
       }
       
