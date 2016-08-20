@@ -1,3 +1,29 @@
+if (lang == "de") {
+  txtTitle = "Komedogentester";
+  txtList = "Liste der Inhaltsstoffe";
+  txtCheck = "Stoffe überprüfen";
+  txtResult = "Testergebnis";
+  txtThreshold = "Minimale Namensähnlichkeit";
+  txtLongDescription = '<h3>Fragen</h3>'+
+    '<h4>Wie geht das?</h4><p>Kopiere eine Liste von Stoffen in das obere Eingabefeld und klicke "überprüfen". Stoffe mit einer niedrigen Einstufung (0) sind nicht komedogen, Stoffe mit einer hohen Einstufung (5) sind gefährlich.</p>' +
+    '<h4>Warum findet es Stoffe, die nicht in meiner Liste stehen?</h4><p>Es sucht für jeden Stoff den Stoff mit dem ähnlichsten Namen in den Datenbanken. Wenn es in der Liste Stoffe gibt, die nicht in den Datenbanken vorkommen, wird ein anderer Stoff mit ähnlichem Namen im Ergebnis gelistet.  Mit einem höheren minimalen Ähnlichkeitsmaß, können diese Treffer ausgeschlossen werden, aber dann könnten auch richtig zugeordnete, falsch geschriebene Stoffe verschwinden.</p>' + 
+    '<h4>Warum steht in einer Zeile, der Inhaltsstoff sei harmlos und in einer anderen Zeile, er sei gefährlich?</h4><p>Es werden unterschiedliche Datenbanken abgefragt, deren Einstufung nicht übereinstimmt.</p>';
+  txtHeading = "<th>Inhaltsstoff</th><th>Ähnlichster bekannter Stoff</th><th>Komedogeneinstufung/th><th>Irritationseinstufung</th>";
+  txtOkResult = "Keine komedogenen Inhaltsstoffe gefunden";
+} else {
+  txtTitle = "Comedogenic Ingredient Tester";
+  txtList = "Ingredient list";
+  txtCheck = "Check ingredients";
+  txtResult = "Test result";
+  txtThreshold = "Matching threshold";
+  txtLongDescription = '<h3>Questions</h3>'+
+    '<h4>How do I use this?</h4><p>Copy a list of ingredients in the top edit field and click the "check" button. Ingredients with low comedogenic rating (0) are safe, ingredients with high rating (5) are dangerous.</p>' +
+    '<h4>Why does it output nonsensical matches?</h4><p>It uses a very simple text similarity score to find the match. If you have ingredients in the list that are not in the source database, it will find a random ingredient with similar name. Increase the threshold value to discard less similar matches.</p>' + 
+    '<h4>Why is there one row saying the ingredient is safe and one row saying that it is unsafe?</h4><p>This tool only lists the ratings from the source databases. If those databases do not agree with each other, it reports it accordingly.</p>';
+  txtHeading = "<th>Ingredient</th><th>Possible Match</th><th>Comedogenic rating</th><th>Irritation rating</th>";
+  txtOkResult = "No comedogenic ingredients found";
+}
+
 function levenshtein(str1, str2) {
     var cost = new Array(),
         n = str1.length,
@@ -65,16 +91,16 @@ function element(id){ return document.getElementById("comedogenic-" + id);  }
 function sourceLink(i) { return '<a href="'+dataSourceUrl[i]+'">'+dataSourceSymbol[i]+'</a>' }
 function sourceLinks(sources) { return "(" + sources.map(sourceLink).join(", ") + ")"; }
 
-function analyze(s) {
+function analyze(sraw) {
   STR_SIM_THRESHOLD = element("score").value * 1;
-  var a = null;
+  var s = null;
   var splitChars = "|,:;";
   for (var i=0;i<splitChars.length;i++)
-    if (s.contains(splitChars[i])) { 
-      s = s.split(splitChars[i]); 
+    if (sraw.contains(splitChars[i])) { 
+      s = sraw.split(splitChars[i]); 
       break; 
     }
-  if (!s) { alert("No ingredient separator found."); s = [s]; }
+  if (!s) { alert("No ingredient separator found."); s = [sraw]; }
   var hasAnyBad = false;
   var badRows = ["","","","","",""];
   var enabledSources = [];
@@ -150,10 +176,10 @@ function analyze(s) {
   }
   var badTable;
   if (hasAnyBad) {
-    badTable = "<thead><tr><th>Ingredient</th><th>Possible Match</th><th>Comedogenic rating</th><th>Irritation rating</th></tr></thead>";
+    badTable = "<thead><tr>"+txtHeading+"</tr></thead>";
     for (var i=badRows.length-1;i>=0;i--) badTable += badRows[i];
   } else {
-    badTable = '<tr class="comedogenic-rating0"><td> => No comedogenic ingredients found</td></tr>';
+    badTable = '<tr class="comedogenic-rating0"><td> => '+txtOkResult+'</td></tr>';
   }
   element("out").innerHTML = badTable;
 }
@@ -179,15 +205,13 @@ var sourceshtml="";
 for (var i=0;i<dataSourceSymbol.length;i++)
   sourceshtml += '<input id="comedogenic-source'+i+'" type="checkbox" checked> '+sourceLink(i);
 
-element("placeholder").innerHTML = '<h3>Comedogenic Ingredient Tester</h3>' +
-  'Ingredient list: <input type="edit" id="comedogenic-in" style="display:block; width: 100%"/>' + 
-  '<button onclick="javascript:analyze(element(\'in\').value)">Check ingredients</button> <span style="padding-left:2em">Matching threshold:</span> <input type="edit" id="comedogenic-score" value="'+STR_SIM_THRESHOLD+'" size="5" style="text-align: right"/> % <span style="padding-left:2em">Databases:</span>'+sourceshtml+ 
-  '<h4>Test result</h4>' +
+
+element("placeholder").innerHTML = '<h3>'+txtTitle+'</h3>' +
+  txtList+': <input type="edit" id="comedogenic-in" style="display:block; width: 100%"/>' + 
+  '<button onclick="javascript:analyze(element(\'in\').value)">'+txtCheck+'</button> <span style="padding-left:2em">'+txtThreshold+':</span> <input type="edit" id="comedogenic-score" value="'+STR_SIM_THRESHOLD+'" size="5" style="text-align: right"/> % <span style="padding-left:2em">Databases:</span>'+sourceshtml+ 
+  '<h4>'+txtResult+'</h4>' +
   '<table id="comedogenic-out" style="display:block; width: 100%"></table>' + "<br><br><br>" +
-  '<h3>Questions</h3>'+
-  '<h4>How do I use this?</h4><p>Copy a list of ingredients in the top edit field and click the "check" button. Ingredients with low comedogenic rating (0) are safe, ingredients with high rating (5) are dangerous.</p>' +
-  '<h4>Why does it output nonsensical matches?</h4><p>It uses a very simple text similarity score to find the match. If you have ingredients in the list that are not in the source database, it will find a random ingredient with similar name. Increase the threshold value to discard less similar matches.</p>' + 
-  '<h4>Why is there one row saying the ingredient is safe and one row saying that it is unsafe?</h4><p>This tool only lists the ratings from the source databases. If those databases do not agree with each other, it reports it accordingly.</p>' 
+  txtLongDescription 
 
   ;
 

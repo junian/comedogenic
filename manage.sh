@@ -21,4 +21,10 @@ gatherdata)
   cat dataAcneOrg.dump.js dataBotanic.dump.js dataHautschutzEngel.dump.js data.join.js algo.join.js > comedogenic.js
 
 ;;
+release)
+  cat dataAcneOrg.dump.js dataBotanic.dump.js dataHautschutzEngel.dump.js data.join.js algo.join.js > comedogenic.js 
+  cp comedogenic.js $HGROOT/sites/web5/_publish/bin/others	
+  cd $HGROOT/sites/web5/
+  make
+;;
 esac
