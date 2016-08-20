@@ -11,7 +11,7 @@ mirror)
   syncHg  
 ;;
 gatherdata)
-  xidel --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0 Iceweasel/31.5.3" http://www.acne.org/messageboard/topic/319593-the-bad-list-comedogenic-ingredients-and-products/ -e '"var dataAcneOrg = [" || join(css(".post.entry-content")[1]//text()[matches(.,"[0-9] *[;:][^P]+$")] ! replace(., "([^:;]*)[:;]? *([-0-9?]+) *[:;]+ *([-0-9?]+)", "[""$1"", ""$2"", ""$3""]"), ", ") || "]; "'  > dataAcneOrg.dump.js
+  xidel --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0 Iceweasel/31.5.3" http://www.acne.org/messageboard/topic/319593-the-bad-list-comedogenic-ingredients-and-products/ -e '"var dataAcneOrg = [" || join(css(".cPost_contentWrap")[1]//text()[matches(.,"[0-9] *[;:][^P]+$")] ! replace(., "([^:;]*)[:;]? *([-0-9?]+) *[:;]+ *([-0-9?]+)", "[""$1"", ""$2"", ""$3""]"), ", ") || "]; "'  > dataAcneOrg.dump.js
 
   xidel 'https://www.beneficialbotanicals.com/facts-figures/comedogenic-rating.html' -e '"var dataBotanic = [" || join(css(".contentTD")//text()[matches(.,"- *[0-9]")] ! replace(.,"(.*)- *([0-9]+)","[""$1"",""$2""]"),", ")|| "]; "' > dataBotanic.dump.js
 
