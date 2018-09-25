@@ -258,12 +258,11 @@ for (var i=0;i<dataSourceSymbol.length;i++)
 
 
 element("placeholder").innerHTML = '<h3>'+txtTitle+'</h3>' +
-  txtList+': <input type="edit" id="comedogenic-in" style="display:block; width: 100%"/>' + 
-  '<button onclick="javascript:analyze(element(\'in\').value)">'+txtCheck+'</button> <span style="padding-left:2em">'+txtThreshold+':</span> <input type="edit" id="comedogenic-score" value="'+STR_SIM_THRESHOLD+'" size="5" style="text-align: right"/> % <span style="padding-left:2em">Databases:</span>'+sourceshtml+ 
+  txtList+': <textarea class="form-control" rows="3" id="comedogenic-in"></textarea><br>' + 
+  '<button class="btn btn-primary" onclick="javascript:analyze(element(\'in\').value)">'+txtCheck+'</button> <span style="padding-left:2em">'+txtThreshold+':</span> <input type="edit" id="comedogenic-score" value="'+STR_SIM_THRESHOLD+'" size="5" style="text-align: right"/> % <span style="padding-left:2em">Databases:</span>'+sourceshtml+ 
   '<h4>'+txtResult+'</h4>' +
   '<table id="comedogenic-out" style="display:block; width: 100%"></table>' + "<br><br><br>" +
   txtLongDescription 
-
   ;
 
 var args = /[?&]comedogenic-check=([^&]+)/.exec(location.toString());
